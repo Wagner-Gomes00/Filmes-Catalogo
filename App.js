@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
 import MoviesScreen from './src/screens/MoviesScreen';
-import GenreDetailScreen from './src/screens/GenreDetailScreen'; // Importa a nova tela
+import GenreDetailScreen from './src/screens/GenreDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
