@@ -15,8 +15,7 @@ const HomeScreen = () => {
             style={styles.background}
         >
             <View style={styles.overlay}>
-                <Text style={styles.welcomeText}>Seja bem-vindo</Text>
-
+                
                 <TouchableOpacity style={styles.button} onPress={handlePress}>
                     <Text style={styles.buttonText}>Catálogo de Filmes</Text>
                 </TouchableOpacity>
