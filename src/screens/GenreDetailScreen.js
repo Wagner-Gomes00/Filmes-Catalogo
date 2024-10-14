@@ -1,62 +1,73 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import axios from 'axios';
 
 const GenreDetailScreen = ({ route }) => {
     const { genre } = route.params;
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        
+        const fetchMovies = async () => {
+            try {
+                const response = await axios.get(`https://api.themoviedb.org/3/discover/movie`, {
+                    params: {
+                        api_key: '074fe283b8223b176c01797b23156f64', 
+                        language: 'pt-PT',
+                        with_genres: getGenreId(genre), 
+                    },
+                });
+                setMovies(response.data.results);
+                setLoading(false);
+            } catch (error) {
+                console.error('Erro ao buscar os filmes:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchMovies();
+    }, [genre]);
+
     
-    const movies = {
-        Ação: [
-            { id: '1', title: 'Ação Explosiva', year: '2022', description: 'Um filme cheio de ação e aventuras explosivas.' },
-            { id: '2', title: 'O Último Guerreiro', year: '2023', description: 'A história do último guerreiro em uma batalha épica.' },
-        ],
-        Aventura: [
-            { id: '3', title: 'A Viagem Infinita', year: '2021', description: 'Uma viagem épica através de mundos desconhecidos.' },
-            { id: '4', title: 'Mundo dos Sonhos', year: '2022', description: 'Explorando um mundo onde os sonhos se tornam realidade.' },
-        ],
-        Comédia: [
-            { id: '5', title: 'Rindo à Toa', year: '2020', description: 'Uma comédia que fará você rir sem parar.' },
-            { id: '6', title: 'Uma Comédia Romântica', year: '2021', description: 'Romance e risadas garantidas.' },
-        ],
-        Terror: [
-            { id: '7', title: 'Noite do Terror', year: '2022', description: 'Uma noite que ninguém vai esquecer, cheia de sustos.' },
-            { id: '8', title: 'A Casa Assombrada', year: '2023', description: 'O mistério de uma casa assombrada e seus segredos.' },
-        ],
-        Drama: [
-            { id: '9', title: 'Caminhos da Vida', year: '2021', description: 'Uma história tocante sobre as escolhas da vida.' },
-            { id: '10', title: 'O Último Suspiro', year: '2022', description: 'Um drama emocionante sobre amor e perda.' },
-        ],
-        Romance: [
-            { id: '11', title: 'Amor em Tempos de Guerra', year: '2023', description: 'Um romance que floresce em meio à guerra.' },
-            { id: '12', title: 'Corações Entrelaçados', year: '2020', description: 'Uma história de amor que transcende o tempo.' },
-        ],
-        Musical: [
-            { id: '13', title: 'Dança da Vida', year: '2022', description: 'Uma celebração da vida através da música e dança.' },
-            { id: '14', title: 'Notas do Coração', year: '2021', description: 'Uma jornada musical que toca a alma.' },
-        ],
+    const getGenreId = (genreName) => {
+        const genreMap = {
+            Ação: 28,
+            Aventura: 12,
+            Comédia: 35,
+            Terror: 27,
+            Drama: 18,
+            Romance: 10749,
+            Musical: 10402,
+        };
+        return genreMap[genreName] || '';
     };
 
     const renderMovieCard = ({ item }) => (
         <TouchableOpacity style={styles.card}>
+            <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
+                style={styles.cardImage}
+            />
             <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardYear}>{item.year}</Text>
-            <Text style={styles.cardDescription}>{item.description}</Text>
+            <Text style={styles.cardYear}>{new Date(item.release_date).getFullYear()}</Text>
+            <Text style={styles.cardDescription}>{item.overview}</Text>
         </TouchableOpacity>
     );
-
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{genre}</Text>
-            <Text style={styles.description}>
-                 {genre}.
-            </Text>
-            <FlatList
-                data={movies[genre]}
-                keyExtractor={item => item.id}
-                renderItem={renderMovieCard}
-                contentContainerStyle={styles.listContainer}
-            />
+            {loading ? (
+                <ActivityIndicator size="large" color="#007bff" />
+            ) : (
+                <FlatList
+                    data={movies}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={renderMovieCard}
+                    contentContainerStyle={styles.listContainer}
+                />
+            )}
         </View>
     );
 };
@@ -75,12 +86,6 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         marginBottom: 20,
     },
-    description: {
-        fontSize: 18,
-        color: '#ffffff',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
     listContainer: {
         paddingBottom: 20,
     },
@@ -92,6 +97,13 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
     },
+    cardImage: {
+        width: '100%',
+        height: 150,
+        borderRadius: 8,
+        marginBottom: 10,
+        resizeMode: 'cover',
+    },
     cardTitle: {
         fontSize: 18,
         color: '#ffffff',
@@ -100,6 +112,12 @@ const styles = StyleSheet.create({
     cardYear: {
         fontSize: 14,
         color: '#ffffff',
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: '#ffffff',
+        marginTop: 5,
+        textAlign: 'center',
     },
 });
 
