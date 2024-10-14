@@ -1,32 +1,44 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
-    const navigation = useNavigation(); 
+    const navigation = useNavigation();
 
-    
     const handlePress = () => {
         navigation.navigate('Movies');
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.welcomeText}>Seja bem-vindo</Text>
+        <ImageBackground
+            source={require('../../assets/images/primeiro.jpg')} 
+            style={styles.background}
+        >
+            <View style={styles.overlay}>
+                <Text style={styles.welcomeText}>Seja bem-vindo</Text>
 
-            <TouchableOpacity style={styles.button} onPress={handlePress}>
-                <Text style={styles.buttonText}>Catálogo de Filmes</Text>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.button} onPress={handlePress}>
+                    <Text style={styles.buttonText}>Catálogo de Filmes</Text>
+                </TouchableOpacity>
+            </View>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    background: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#000',
+        width: '100%',
+        height: '100%',
+    },
+    overlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+        width: '100%',
         padding: 20,
     },
     welcomeText: {
